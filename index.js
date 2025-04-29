@@ -3,6 +3,7 @@ const { DAO } = require("./dao/dao.js");
 const app = express();
 const cors = require("cors");
 const crypto = require("crypto");
+const axios  = require("axios");
 
 // const session = require('express-session');
 // const cookieParser = require('cookie-parser');
@@ -11,12 +12,12 @@ const crypto = require("crypto");
 new DAO();
 
 
-app.use(cors({
-    origin: 'https://ob384.github.io', // Frontend domain
-    credentials: true,
-  }));
+// app.use(cors({
+//     origin: 'https://ob384.github.io', // Frontend domain
+//     credentials: true,
+//   }));
 
-  // app.use(cors())
+app.use(cors())
   // app.use(cookieParser());
 
 
@@ -34,11 +35,44 @@ app.use((req, res,next)=>{
 
 app.listen(process.env.PORT || 3001)
 
+new DAO();
+
 app.post("/api/addUser", async (req, res)=>{
   try {
-    const {fname, lname,email, pwd} = req.body
-    const result = await DAO.addUser(fname, lname,email, pwd)
-    res.status(200).json({result})
+    const {firstname, lastname,email, password} = req.body
+    const result = await DAO.addUser(firstname, lastname,email, password).then((result)=>{res.status(200).json({result})})
+    
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({error: error.message})
+  }
+})
+
+app.get("/api/chat/:userID", async (req, res)=>{
+  try {
+    const {message, usegpt} = req.query
+
+    // const chatResult = await axios.get(`localhost:3000/chat/user123?message=${message}?&use_gpt=${usegpt}`)
+    DAO.addUserMessage(req.params.userID, message).then((result)=>{
+      console.log("User Message Added",result)
+      axios.get(`http://localhost:3000/chat/${req.params.userID}?message=${message}`,).then((response)=>{
+        DAO.addBotMessage(req.params.userID, response.data).then((result)=>{
+          console.log("Bot Message Added",result)
+          res.status(200).json({result: response.data})
+        })
+      })})
+    // DAO.addUserMessage(req.params.userID, message).then((result)=>{
+    //   console.log("User Message Added",result)
+    //   axios.get(`http://localhost:3000/chat/${req.params.userID}?message=${message}`,).then((response)=>{
+    //     DAO.addBotMessage(req.params.userID, response.data).then((result)=>{
+    //       console.log("Bot Message Added",result)
+    //       res.status(200).json({result: response.data})
+    //     })
+    //   })})
+    
+      // console.log(chatResult.data);
+    // res.status(200).json({result: chatResult.data})
+    
   } catch (error) {
     console.error(error.message);
     res.status(500).json({error: error.message})
