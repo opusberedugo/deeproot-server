@@ -25,17 +25,25 @@ class DAO {
     }
   }
 
-  static async addUserMessage(userID, message, ) {
+  static async addUserMessage(userID, message) {
     try {
-      // client.connect();
-      const database = client.db("deeproot")
-      const collection = database.collection("messages")
-      const result = await collection.insertOne({from: userID, to: "AI",  "message": message,  date: Date.now()})
-      console.log(`Insertion ${result.insertedId}: Complete`);
-      return result
-      // client.close();
+      const database = client.db("deeproot");
+      const collection = database.collection("messages");
+      
+      const messageDoc = {
+        from: userID, 
+        to: "AI",
+        message: message,
+        date: Date.now()
+      };
+      
+      const result = await collection.insertOne(messageDoc);
+      console.log(`Message inserted with ID: ${result.insertedId}`);
+      
+      return result;
     } catch (error) {
-      console.error(error.message)
+      console.error("Error adding user message:", error.message);
+      throw error; // Re-throw the error for proper handling upstream
     }
   }
 
@@ -90,6 +98,29 @@ class DAO {
     }
   }
 
+
+  static getMessages = async(userID, )=>{
+    try {
+      const database = client.db("deeproot")
+      const collection  = database.collection("messages")
+      const result = await collection.find({$or: [{ from: userID },{ to: userID }]}).toArray()
+      
+      
+      if (result) {
+        console.log(`User ${result._id} found`);
+        // console.log(result);
+        return result
+      } else {
+        console.log("User not found");
+        return []
+      }
+      // return result
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  
     
 
   

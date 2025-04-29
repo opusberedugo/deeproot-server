@@ -67,12 +67,12 @@ app.post("/api/login", async (req, res)=>{
 
 app.get("/api/chat/:userID", async (req, res)=>{
   try {
-    const {message, usegpt} = req.query
+    const {message, usegpt} = req.body
 
     // const chatResult = await axios.get(`localhost:3000/chat/user123?message=${message}?&use_gpt=${usegpt}`)
     DAO.addUserMessage(req.params.userID, message).then((result)=>{
       console.log("User Message Added",result)
-      axios.get(`http://localhost:3000/chat/${req.params.userID}?message=${message}`,).then((response)=>{
+      axios.get(`http://localhost:8000/predict/${req.params.userID}?message=${message}`,).then((response)=>{
         DAO.addBotMessage(req.params.userID, response.data).then((result)=>{
           console.log("Bot Message Added",result)
           res.status(200).json({result: response.data})
@@ -89,6 +89,32 @@ app.get("/api/chat/:userID", async (req, res)=>{
     
       // console.log(chatResult.data);
     // res.status(200).json({result: chatResult.data})
+    
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({error: error.message})
+  }
+})
+
+app.get("/api/:userID/messages", async (req, res)=>{
+  try {
+    const {userID} = req.params
+    const result = await DAO.getMessages(userID).then((result)=>{
+      res.status(200).json({result})
+    })
+    
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({error: error.message})
+  }
+})
+
+app.get("/api/:userID/messages", async (req, res)=>{
+  try {
+    const {userID} = req.params
+    const result = await DAO.getMessages(userID).then((result)=>{
+      res.status(200).json({result})
+    })
     
   } catch (error) {
     console.error(error.message);
