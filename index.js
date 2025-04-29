@@ -48,6 +48,23 @@ app.post("/api/addUser", async (req, res)=>{
   }
 })
 
+app.post("/api/login", async (req, res)=>{
+  try {
+    const {email, password} = req.body
+    const result = await DAO.getUser(email, password).then((result)=>{
+      if (result) {
+        res.status(200).json({result})
+      } else {
+        res.status(401).json({error: "Invalid email or password"})
+      }
+    })
+    
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({error: error.message})
+  }
+})
+
 app.get("/api/chat/:userID", async (req, res)=>{
   try {
     const {message, usegpt} = req.query

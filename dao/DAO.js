@@ -71,13 +71,14 @@ class DAO {
   //   }
   // }
 
-  static verifyUser = async(email, password)=>{
+  static getUser = async(email, password)=>{
     try {
       const database = client.db("deeproot")
       const collection  = database.collection("users")
       const result = await collection.findOne({email: email, password: password})
       if (result) {
         console.log(`User ${result._id} found`);
+        // console.log(result);
         return result
       } else {
         console.log("User not found");
