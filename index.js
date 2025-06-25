@@ -65,7 +65,7 @@ app.post("/api/login", async (req, res)=>{
   }
 })
 
-app.get("/api/chat/:userID", async (req, res)=>{
+app.post("/api/chat/:userID", async (req, res)=>{
   try {
     const {message, usegpt} = req.body
 
@@ -97,9 +97,12 @@ app.get("/api/chat/:userID", async (req, res)=>{
 })
 
 app.get("/api/:userID/messages", async (req, res)=>{
+  // A GET request to retrieve messages for a specific user
   try {
-    const {userID} = req.params
-    const result = await DAO.getMessages(userID).then((result)=>{
+    
+
+    DAO.getMessages(req.params.userID).then((result)=>{
+      console.log("Messages retrieved for user:", req.params.userID, result);
       res.status(200).json({result})
     })
     

@@ -1,6 +1,8 @@
 const {MongoClient, ObjectId} = require("mongodb");
 
-const uri = `mongodb+srv://ob384:AewneOTcxz3dx1yC@after-mdx.w9ple.mongodb.net/`
+// const uri = `mongodb+srv://ob384:AewneOTcxz3dx1yC@after-mdx.w9ple.mongodb.net/`
+const uri = `mongodb://localhost:27017/`
+
 
 const client = new MongoClient(uri)
 
@@ -99,30 +101,29 @@ class DAO {
   }
 
 
-  static getMessages = async(userID, )=>{
+  static getMessages = async (userID) => {
     try {
-      const database = client.db("deeproot")
-      const collection  = database.collection("messages")
-      const result = await collection.find({$or: [{ from: userID },{ to: userID }]}).toArray()
+      const database = client.db("deeproot");
+      const collection = database.collection("messages");
+      const result = await collection.find({
+        $or: [{ from: userID }, { to: userID }]
+      }).toArray();
       
-      
-      if (result) {
-        console.log(`User ${result._id} found`);
-        // console.log(result);
-        return result
+      // Check if array has any results
+      if (result.length) {
+        console.log(`Found ${result.length} messages for user ${userID}`);
+        console.log(result);
+        return result;
       } else {
-        console.log("User not found");
-        return []
+        console.log("No messages found for this user");
+        return [];
       }
-      // return result
     } catch (error) {
-      console.error(error.message);
+      console.error("Error fetching messages:", error.message);
+      // Return empty array or rethrow based on your error handling strategy
+      return [];
     }
   }
-
-  
-    
-
   
 
 }
