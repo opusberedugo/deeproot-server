@@ -1,11 +1,8 @@
 const {MongoClient, ObjectId} = require("mongodb");
 
-// const uri = `mongodb+srv://ob384:AewneOTcxz3dx1yC@after-mdx.w9ple.mongodb.net/`
 const uri = `mongodb://localhost:27017/`
 
-
 const client = new MongoClient(uri)
-
 
 class DAO {
   constructor(){
@@ -53,7 +50,7 @@ class DAO {
     try {
       // client.connect();
       const database = client.db("deeproot")
-      const collection = database.collection("bot-messages")
+      const collection = database.collection("messages")
       const result = await collection.insertOne({from: "AI", to: userID,  "message": message, date: Date.now()})
       console.log(`Insertion ${result.insertedId}: Complete`);
       return result
@@ -62,24 +59,6 @@ class DAO {
       console.error(error.message)
     }
   }
-
-  // static async addUser(userObject){
-  //   try {
-  //     // client.connect();
-  //     const database = client.db("deeproot")
-  //     userObject.username = userObject.email.split( "@")[0]
-  //     console.log(userObject);
-      
-  //     const collection = database.collection("users")
-  //     await collection.createIndex({ username: 1 }, { unique: true });
-  //     await collection.createIndex({ email: 1 }, { unique: true });
-  //     const result = await collection.insertOne(userObject)
-  //     console.log(`Insertion ${result.insertedId}: Complete`);
-  //     // client.close();
-  //   } catch (error) {
-  //     console.error(error.message)
-  //   }
-  // }
 
   static getUser = async(email, password)=>{
     try {
